@@ -13,7 +13,11 @@ const TRUSTED_SOURCES = [
 const NEWS_CATEGORIES = ["All", "Markets", "Finance", "Business"];
 const RSS_PROXY = "https://api.rss2json.com/v1/api.json?rss_url=";
 const SK = { session:"ap:session", users:"ap:users", bookmarks:(e)=>`ap:bm:${e.replace(/[^a-z0-9]/gi,"_")}`, apikey:"ap:apikey" };
-const getApiKey=()=>{ try{return localStorage.getItem("ap:apikey")||"";}catch(_){return "";} };
+const BUILT_IN_KEY=(()=>{try{return process.env.REACT_APP_CLAUDE_KEY||"";}catch(_){return "";}})();
+const getApiKey=()=>{
+  if(BUILT_IN_KEY) return BUILT_IN_KEY;
+  try{return localStorage.getItem("ap:apikey")||"";}catch(_){return "";}
+};
 const setApiKey=(k)=>{ try{localStorage.setItem("ap:apikey",k);}catch(_){} };
 
 const SUGGESTED_QUESTIONS = {

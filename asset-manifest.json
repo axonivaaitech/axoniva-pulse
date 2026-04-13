@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/axoniva-pulse/static/css/main.e6c13ad2.css",
+    "main.js": "/axoniva-pulse/static/js/main.f5719bac.js",
+    "index.html": "/axoniva-pulse/index.html",
+    "main.e6c13ad2.css.map": "/axoniva-pulse/static/css/main.e6c13ad2.css.map",
+    "main.f5719bac.js.map": "/axoniva-pulse/static/js/main.f5719bac.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.f5719bac.js"
+  ]
+}

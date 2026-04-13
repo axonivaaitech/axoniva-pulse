@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/axoniva-pulse/static/css/main.e6c13ad2.css",
-    "main.js": "/axoniva-pulse/static/js/main.b2b22663.js",
+    "main.js": "/axoniva-pulse/static/js/main.eeadad42.js",
     "index.html": "/axoniva-pulse/index.html",
     "main.e6c13ad2.css.map": "/axoniva-pulse/static/css/main.e6c13ad2.css.map",
-    "main.b2b22663.js.map": "/axoniva-pulse/static/js/main.b2b22663.js.map"
+    "main.eeadad42.js.map": "/axoniva-pulse/static/js/main.eeadad42.js.map"
   },
   "entrypoints": [
     "static/css/main.e6c13ad2.css",
-    "static/js/main.b2b22663.js"
+    "static/js/main.eeadad42.js"
   ]
 }

@@ -524,7 +524,6 @@ const MorningBriefingPanel=({articles,user,isMobile})=>{
             <div style={{display:"flex",flexDirection:"column",gap:0}}>
               {briefing.stories?.map((story,i)=>{
                 const sent=SENT[story.sentiment]||SENT.neutral;
-                const _cfg=CAT_CFG[story.category]||CAT_CFG.Markets;
                 return(
                   <div key={i} style={{display:"flex",gap:16,padding:"20px 0",borderBottom:i<4?`1px solid ${C.rule}`:"none",alignItems:"flex-start"}}>
                     <span style={{fontFamily:"'Playfair Display',serif",fontSize:28,fontWeight:700,color:C.gold,lineHeight:1,flexShrink:0,minWidth:32,opacity:0.7}}>{story.number}</span>

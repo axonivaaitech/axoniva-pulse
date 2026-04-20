@@ -217,7 +217,7 @@ const StoryChatPanel=({article,onClose})=>{
     const q=text||input.trim();if(!q||loading)return;
     setInput("");setMessages(p=>[...p,{role:"user",content:q}]);setLoading(true);
     try{
-      const ak=getApiKey();if(!ak){setMessages(p=>[...p,{role:"assistant",content:"⚠️ API key not configured. Please set your Anthropic API key in Settings."}]);setLoading(false);return;}const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":ak,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-3-5-haiku-20241022",max_tokens:600,system:CHAT_SYSTEM_PROMPT(article),messages:[...messages.slice(-8).map(m=>({role:m.role,content:m.content})),{role:"user",content:q}]})});
+      const ak=getApiKey();if(!ak){setMessages(p=>[...p,{role:"assistant",content:"⚠️ API key not configured. Please set your Anthropic API key in Settings."}]);setLoading(false);return;}const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":ak,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:600,system:CHAT_SYSTEM_PROMPT(article),messages:[...messages.slice(-8).map(m=>({role:m.role,content:m.content})),{role:"user",content:q}]})});
       const data=await res.json();
       setMessages(p=>[...p,{role:"assistant",content:data.content?.[0]?.text||"Could not generate response."}]);
     }catch(_){setMessages(p=>[...p,{role:"assistant",content:"Connection error. Please try again."}]);}
@@ -287,7 +287,7 @@ const GlobalChatbot=({isMobile})=>{
     const q=text||input.trim();if(!q||loading)return;
     setInput("");setMessages(p=>[...p,{role:"user",content:q}]);setLoading(true);
     try{
-      const ak=getApiKey();if(!ak){setMessages(p=>[...p,{role:"assistant",content:"⚠️ API key not configured. Please set your Anthropic API key in Settings."}]);setLoading(false);return;}const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":ak,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-3-5-haiku-20241022",max_tokens:500,system:GLOBAL_CHAT_SYSTEM,messages:[...messages.slice(-8).map(m=>({role:m.role,content:m.content})),{role:"user",content:q}]})});
+      const ak=getApiKey();if(!ak){setMessages(p=>[...p,{role:"assistant",content:"⚠️ API key not configured. Please set your Anthropic API key in Settings."}]);setLoading(false);return;}const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":ak,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:500,system:GLOBAL_CHAT_SYSTEM,messages:[...messages.slice(-8).map(m=>({role:m.role,content:m.content})),{role:"user",content:q}]})});
       const data=await res.json();
       const reply=data.content?.[0]?.text||"Could not respond. Please try again.";
       setMessages(p=>[...p,{role:"assistant",content:reply}]);
@@ -467,7 +467,7 @@ const MorningBriefingPanel=({articles,user,isMobile})=>{
     if(!articles.length)return;
     setLoading(true);setError(false);setGenerated(false);
     try{
-      const ak=getApiKey();if(!ak){setError(true);setLoading(false);return;}const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":ak,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-3-5-haiku-20241022",max_tokens:1200,messages:[{role:"user",content:BRIEFING_PROMPT(articles,user?.name?.split(" ")[0],hour)}]})});
+      const ak=getApiKey();if(!ak){setError(true);setLoading(false);return;}const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":ak,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:1200,messages:[{role:"user",content:BRIEFING_PROMPT(articles,user?.name?.split(" ")[0],hour)}]})});
       const data=await res.json();
       const raw=data.content?.[0]?.text?.replace(/```json|```/g,"").trim();
       setBriefing(JSON.parse(raw));setGenerated(true);
@@ -524,7 +524,7 @@ const MorningBriefingPanel=({articles,user,isMobile})=>{
             <div style={{display:"flex",flexDirection:"column",gap:0}}>
               {briefing.stories?.map((story,i)=>{
                 const sent=SENT[story.sentiment]||SENT.neutral;
-                const _cfg=CAT_CFG[story.category]||CAT_CFG.Markets;
+                const cfg=CAT_CFG[story.category]||CAT_CFG.Markets;
                 return(
                   <div key={i} style={{display:"flex",gap:16,padding:"20px 0",borderBottom:i<4?`1px solid ${C.rule}`:"none",alignItems:"flex-start"}}>
                     <span style={{fontFamily:"'Playfair Display',serif",fontSize:28,fontWeight:700,color:C.gold,lineHeight:1,flexShrink:0,minWidth:32,opacity:0.7}}>{story.number}</span>
@@ -743,11 +743,18 @@ const EthicsNotice=()=>{
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 export default function AxonivaPulse() {
-  const {isMobile,isTablet}=useBreakpoint();
+  const {isMobile,isTablet,w}=useBreakpoint();
   const [articles,setArticles]=useState([]);const [loading,setLoading]=useState(true);const [fetchError,setFetchError]=useState(false);
   const [category,setCategory]=useState("All");const [summaries,setSummaries]=useState({});const [summarising,setSummarising]=useState({});
   const [lastUpdated,setLastUpdated]=useState(null);const [refreshing,setRefreshing]=useState(false);
   const [user,setUser]=useState(null);const [showAuth,setShowAuth]=useState(false);const [bookmarks,setBookmarks]=useState([]);const [menuOpen,setMenuOpen]=useState(false);const [showApiKey,setShowApiKey]=useState(false);const [apiKeySet,setApiKeySet]=useState(()=>!!getApiKey());const [showSources,setShowSources]=useState(false);const isAdmin=typeof window!=="undefined"&&window.location.search.includes("admin=axoniva2026");
+
+  useEffect(()=>{
+    (async()=>{
+      try{const sr=sessionStorage.getItem(SK.session);if(sr){const s=JSON.parse(sr);if(s.loggedIn){setUser(s);try{const br=sessionStorage.getItem(SK.bookmarks(s.email));if(br)setBookmarks(JSON.parse(br));}catch(_){}}}}catch(_){}
+      fetchNews();
+    })();
+  },[]);
 
   const fetchNews=useCallback(async(isRefresh=false)=>{
     isRefresh?setRefreshing(true):setLoading(true);setFetchError(false);
@@ -758,16 +765,9 @@ export default function AxonivaPulse() {
     isRefresh?setRefreshing(false):setLoading(false);
   },[]);
 
-  useEffect(()=>{
-    (async()=>{
-      try{const sr=sessionStorage.getItem(SK.session);if(sr){const s=JSON.parse(sr);if(s.loggedIn){setUser(s);try{const br=sessionStorage.getItem(SK.bookmarks(s.email));if(br)setBookmarks(JSON.parse(br));}catch(_){}}}}catch(_){}
-      fetchNews();
-    })();
-  },[fetchNews]);
-
   const summarise=async(article)=>{
     setSummarising(p=>({...p,[article.id]:true}));
-    try{const ak=getApiKey();if(!ak){setSummaries(p=>({...p,[article.id]:{error:true,nokey:true}}));setSummarising(p=>({...p,[article.id]:false}));return;}const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":ak,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-3-5-haiku-20241022",max_tokens:900,messages:[{role:"user",content:ETHICAL_PROMPT(article)}]})});const data=await res.json();if(data.error){console.error("API Error:",data.error);setSummaries(p=>({...p,[article.id]:{error:true,apierr:data.error.message||JSON.stringify(data.error)}}));setSummarising(p=>({...p,[article.id]:false}));return;}const raw=data.content?.[0]?.text?.replace(/```json|```/g,"").trim();const parsed=JSON.parse(raw);if(!parsed.safe_to_publish){setSummaries(p=>({...p,[article.id]:{blocked:true,content_flags:parsed.content_flags||["SUSPICIOUS_CONTENT"],flag_reason:parsed.flag_reason||"Failed ethical review."}}));}else{setSummaries(p=>({...p,[article.id]:parsed}));}}
+    try{const ak=getApiKey();if(!ak){setSummaries(p=>({...p,[article.id]:{error:true,nokey:true}}));setSummarising(p=>({...p,[article.id]:false}));return;}const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":ak,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:900,messages:[{role:"user",content:ETHICAL_PROMPT(article)}]})});const data=await res.json();if(data.error){setSummaries(p=>({...p,[article.id]:{error:true,apierr:data.error.message}}));setSummarising(p=>({...p,[article.id]:false}));return;}const raw=data.content?.[0]?.text?.replace(/```json|```/g,"").trim();const parsed=JSON.parse(raw);if(!parsed.safe_to_publish){setSummaries(p=>({...p,[article.id]:{blocked:true,content_flags:parsed.content_flags||["SUSPICIOUS_CONTENT"],flag_reason:parsed.flag_reason||"Failed ethical review."}}));}else{setSummaries(p=>({...p,[article.id]:parsed}));}}
     catch(_){setSummaries(p=>({...p,[article.id]:{error:true}}));}
     setSummarising(p=>({...p,[article.id]:false}));
   };
